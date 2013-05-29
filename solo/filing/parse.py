@@ -18,12 +18,11 @@ import pandas
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_DIR = os.path.join(THIS_DIR, 'data')
-## 
-#VALUE_MULTIPLER = 1000
 
 f = '/home/chris/dev/other/solo/solo/filing/data/0000909012-12-000357.txt'
+f2 = '/home/chris/dev/other/solo/solo/filing/data/0000909012-12-000436.txt'
 
-# TODO: this could be a nicer datastructer like collections.namedtuple so we
+# TODO: this could be a nicer datastruct like collections.namedtuple so we
 # access it as an object by attribute
 COLUMN_NAMES = ['NAME OF ISSUER', 'TITLE OF CLASS', 'CUSIP', 
                 'MARKET VALUE', 'SHRS OR PRN AMT', 'SH/ PUT/ PRN CALL',
@@ -88,7 +87,9 @@ def parse_form_13f(fname):
     # the label for the row (security)
     data_frame = pandas.read_fwf(
         fname,
-        widths=[28, 17, 11, 10, 9, 9, 22, 12, 8, 3],
+        # ranges of the fixed width columns
+        colspecs = [(0, 29), (29, 45), (45, 57), (57, 64), (64, 73), (73, 79),
+                    (79, 92), (92, 112), (112, 123), (123, 132)],
         skiprows=[0,1,2,3,4],
         index_col=0,
         names=COLUMN_NAMES,
