@@ -98,8 +98,8 @@ def parse_form_13f(fname):
     # drop label if all values in row are Na
     data_frame = data_frame.dropna(how='all')
 
-    # for each column apply a function on each of the rows which strips string
-    # data of tabs, newlines and spaces
+    # for each column apply a function on each of the rows which strips strings
+    # of tabs, newlines and spaces
     data_frame = data_frame.apply(lambda x: x.apply(
         lambda x: x.strip() if isinstance(x, basestring) else x)
     )
