@@ -22,15 +22,19 @@ from .import parse
 import datetime
 
 
-def total_market_value_of_COM(data_frame):
-    
+def get_common_stocks(data_frame):
     title_of_class = parse.COLUMN_NAMES[1]
-    market_value = parse.COLUMN_NAMES[3]
-
     # filter TITLE OF CLASS = COM
     filter = data_frame[title_of_class] == 'COM'
-    # apply filter
-    data_frame = data_frame[filter]
+    # apply pandas filter on columns
+    return data_frame[filter]
+
+
+def total_market_value_of_COM(data_frame):
+
+    data_frame = get_common_stocks(data_frame)
+    # string identifying market value
+    market_value = parse.COLUMN_NAMES[3]
 
     return data_frame[market_value].sum()
 
@@ -54,9 +58,67 @@ def question_2_a(data_set):
     return total_values, first_quarter_total < last_quarter_total
 
 
-def analyse_all():
-    quarters = parse.parse_all_files()
+def get_new_stocks(data_frame1, data_frame2):
+    """return data_frame containing COM stock positions that are in data_frame1
+    but not in data_frame2"""
 
+    data_frame1, data_frame2 = map(get_common_stocks,
+                                   [data_frame1, data_frame2])
+
+    new_stocks = data_frame1.index - data_frame2.index
+
+    # apply a pandas filter on the index
+    return data_frame1.ix[new_stocks]
+
+
+def get_top_holdings(data_frame, n):
+    "return top n holdings from a data_frame"
+
+    # sort by market value
+    df_by_market_value = data_frame.sort(parse.COLUMN_NAMES[3], ascending=False)
+    return df_by_market_value[0: n]
+
+
+def question_2_b(data_set):
+    """b) What would have been the 5 largest holdings of common stock that were
+    publically available on 12 August 2012 for the fund manager?"""
+    pass
+
+    #target_date = datetime.datetime(2012, 8, 12)
+    #print target_date
+    #for fname, conformed_period, filed_date, df in data_set:
+    #    if conformed_period
+    
+    # get correct dataset for target date
+
+
+def question_2_c(data_set):
+    """c) As at 12/31/2012, what were the fund's 3 biggest new common stock
+    positions (stocks it had not held in the previous quarter)?"""
+
+    target_conformed_date = datetime.datetime(2012, 12, 31)
+
+    # order data by conformed (just in case)
+    sorted_data_set = sorted(data_set, key=lambda d: d[1])
+
+    # check the last conformed data equals target
+    assert sorted_data_set[-1][1] == target_conformed_date, 'Got wrong date'
+
+    target_data_frame = sorted_data_set[-1]
+    previous_data_frame = sorted_data_set[-2]
+
+    new_stocks = get_new_stocks(target_data_frame, previous_data_frame)
+
+    top_holdings = get_top_holdings(new_stocks, 3)
+
+    return top_holdings
+
+
+def analyse_all():
+
+    quarters = parse.parse_all_files()
     assert len(quarters) == 4, 'Wrong number of quarters'
 
-    return question_2_a(quarters)
+    print question_2_a(quarters)
+    print question_2_c(quarters)
+    #return question_2_a(quarters)
