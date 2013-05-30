@@ -18,8 +18,10 @@ c) As at 12/31/2012, what were the fund's 3 biggest new common stock positions
 (stocks it had not held in the previous quarter)?
 """
 
-from .import parse
 import datetime
+from pprint import pprint
+
+from .import parse
 
 
 def get_common_stocks(data_frame):
@@ -39,26 +41,9 @@ def total_market_value_of_COM(data_frame):
 
     return data_frame[market_value].sum()
 
-
-def question_2_a(data_set):
-    """a) What was the total value of all common stock positions in the fund
-    for each quarter? Did the fund grow or fall in value with respect to its
-    common stock positions over the 4 quarters?
-
-    Answer return as tuple
-    """
-
-    total_values = []
-    for fname, conformed_period, filed_date, df in data_set:
-        total_values.append(
-            (fname, conformed_period, filed_date,
-             total_market_value_of_COM(df))
-        )
-
-    first_quarter_total = total_values[0][3]
-    last_quarter_total = total_values[-1][3]
-
-    return total_values, first_quarter_total < last_quarter_total
+def sort_data_set(data_set):
+    "sorts data_set by conformed date"
+    return sorted(data_set, key=lambda d: d[1])
 
 
 def get_new_stocks(data_frame1, data_frame2):
@@ -100,6 +85,32 @@ def get_closest_data(data_set, target_date):
     return data_set[sorted_diffs[0][0]]
 
 
+def question_2_a(data_set):
+    """a) What was the total value of all common stock positions in the fund
+    for each quarter? Did the fund grow or fall in value with respect to its
+    common stock positions over the 4 quarters?
+
+    Answer return as tuple
+    """
+
+    # order data by conformed (just in case)
+    sorted_data_set = sort_data_set(data_set)
+    pprint(sorted_data_set)
+
+    total_values = []
+    for fname, conformed_period, filed_date, df in sorted_data_set:
+        total_values.append(
+            (fname, conformed_period, filed_date,
+             total_market_value_of_COM(df))
+        )
+
+    first_quarter_total = total_values[0][3]
+    last_quarter_total = total_values[-1][3]
+
+    return total_values, first_quarter_total < last_quarter_total
+
+
+
 def question_2_b(data_set):
     """b) What would have been the 5 largest holdings of common stock that were
     publically available on 12 August 2012 for the fund manager?"""
@@ -118,7 +129,7 @@ def question_2_c(data_set):
     target_conformed_date = datetime.datetime(2012, 12, 31)
 
     # order data by conformed (just in case)
-    sorted_data_set = sorted(data_set, key=lambda d: d[1])
+    sorted_data_set = sort_data_set(data_set)
 
     # check the last conformed data equals target
     assert sorted_data_set[-1][1] == target_conformed_date, 'Got wrong date'

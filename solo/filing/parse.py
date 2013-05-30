@@ -2,7 +2,6 @@
 Parses ./data/*.txt Form 13 F files (http://www.sec.gov/answers/form13f.htm),
 creates queryable datastructure, saves as pickle solo-filing.pkl
 
-
 From brief:
 
 1. Store the fields from the complete submission text files (including Name
@@ -28,6 +27,14 @@ COLUMN_NAMES = ['NAME OF ISSUER', 'TITLE OF CLASS', 'CUSIP',
                 'MARKET VALUE', 'SHRS OR PRN AMT', 'SH/ PUT/ PRN CALL',
                 'INVESTMENT DESCRETION', 'VOTING AUTHORITY SOLE',
                 'VOTING AUTHORITY SHARED', 'VOTING AUTHORITY NONE']
+
+
+class Form13F:
+    def __init__(self, fname, conformed_period, submit_date, data_frame):
+        self.file_name = fname
+        self.conformed_period = conformed_period
+        self.submit_data = submit_date,
+        self.data_frame = data_frame
 
 
 def get_files():
@@ -68,20 +75,24 @@ def parse_form_13f_head(fname):
             if '<S>' in line:
                 # count the <S> column in the column count
                 no_of_columns = line.count('<C>') + 1
-                return conformed_period_of_report, filed_as_of_date, no_of_columns
+                return conformed_period_of_report, filed_as_of_date, \
+                        no_of_columns
+
 
     return conformed_period_of_report, filed_as_of_date, no_of_columns
 
 
 def parse_form_13f(fname):
 
-    # note 'OTHER MANAGERS' field is absent from the fixed width column definitions
-    # presumably because the no data is present in these documents for this field.
-    # The assertion will pick up if/when the column count comes to 13
+    # note 'OTHER MANAGERS' field is absent from the fixed width column
+    # definitions presumably because the no data is present in these documents
+    # for this field.
+    # The assertion will pick up if we get unexpected no. of columns
     conformed_period_of_report, filed_as_of_date, no_of_columns = \
             parse_form_13f_head(fname)
 
-    assert no_of_columns == len(COLUMN_NAMES), 'Not enough column_names/columns'
+    assert no_of_columns == len(COLUMN_NAMES), \
+            'Not enough column_names/columns'
 
     # construct pandas.DataFrame from fixed with file, use the 0th column as
     # the label for the row (security)
@@ -104,17 +115,18 @@ def parse_form_13f(fname):
         lambda x: x.strip() if isinstance(x, basestring) else x)
     )
 
-    return fname, conformed_period_of_report, filed_as_of_date, data_frame
+    return Form13F(fname, conformed_period_of_report, filed_as_of_date,
+                   data_frame)
 
 
-def sort_data_set(data_set):
+def sort_forms(data_set):
     "sorts data_set by conformed date"
-    return sorted(data_set, key=lambda d: d[1])
+    return sorted(data_set, key=lambda d: d.conformed_period)
 
 
 def parse_all_files():
     """returns data_set, [(fname, conformed_period_of_report, filed_as_of_date,
     data_frame), ...]"""
-    return sort_data_set(
+    return sort_forms(
         map(parse_form_13f, get_files())
     )

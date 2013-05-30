@@ -18,10 +18,11 @@ class TestParse(unittest.TestCase):
         with open(test_file_one) as f:
             lines = f.readlines()
 
-        fname, date1, date2, data_frame = parse.parse_form_13f(test_file_one)
+        #fname, date1, date2, data_frame = parse.parse_form_13f(test_file_one)
+        form = parse.parse_form_13f(test_file_one)
 
         self.assertEqual(
-            data_frame.ix['ITAU UNIBANCO HLDG SA']['MARKET VALUE'], 
+            form.data_frame.ix['ITAU UNIBANCO HLDG SA']['MARKET VALUE'], 
                          int(lines[580][60:63].strip())
         )
 
@@ -32,10 +33,10 @@ class TestParse(unittest.TestCase):
         with open(test_file_two) as f:
             lines = f.readlines()
 
-        fname, date1, date2, data_frame = parse.parse_form_13f(test_file_two)
+        form = parse.parse_form_13f(test_file_two)
 
         self.assertEqual(
-            data_frame.ix['AKAMAI TECHNOLOGIES INC']['SHRS OR PRN AMT'], 
+            form.data_frame.ix['AKAMAI TECHNOLOGIES INC']['SHRS OR PRN AMT'], 
                          int(lines[36][68:73].strip())
         )
 
@@ -58,13 +59,12 @@ class TestParse(unittest.TestCase):
 
         data_set = parse.parse_all_files()
 
-        for algo_data, fixture_data in zip(data_set, fixture_data_set):
-            fname, _, _, data_frame = algo_data
+        for form, fixture_data in zip(data_set, fixture_data_set):
 
             # assert filename the same (discard path for algo data)
-            self.assertEqual(os.path.basename(fname), fixture_data[0])
+            self.assertEqual(os.path.basename(form.file_name), fixture_data[0])
 
-            self.assertEqual(data_frame['MARKET VALUE'].sum(),
+            self.assertEqual(form.data_frame['MARKET VALUE'].sum(),
                              fixture_data[1])
 
 
