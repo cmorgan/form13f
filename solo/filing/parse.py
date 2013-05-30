@@ -21,19 +21,17 @@ DATA_DIR = os.path.join(THIS_DIR, 'data')
 f = '/home/chris/dev/3rdparty/form13f/filing/data/0000909012-12-000357.txt'
 #f2 = '/home/chris/dev/other/solo/solo/filing/data/0000909012-12-000436.txt'
 
-# TODO: this could be a nicer datastruct like collections.namedtuple so we
-# access it as an object by attribute
-COLUMN_NAMES = ['NAME OF ISSUER', 'TITLE OF CLASS', 'CUSIP', 
-                'MARKET VALUE', 'SHRS OR PRN AMT', 'SH/ PUT/ PRN CALL',
-                'INVESTMENT DESCRETION', 'VOTING AUTHORITY SOLE',
-                'VOTING AUTHORITY SHARED', 'VOTING AUTHORITY NONE']
-
 
 class Form13F:
+    column_names = ['NAME OF ISSUER', 'TITLE OF CLASS', 'CUSIP',
+                    'MARKET VALUE', 'SHRS OR PRN AMT', 'SH/ PUT/ PRN CALL',
+                    'INVESTMENT DESCRETION', 'VOTING AUTHORITY SOLE',
+                    'VOTING AUTHORITY SHARED', 'VOTING AUTHORITY NONE']
+
     def __init__(self, fname, conformed_period, submit_date, data_frame):
         self.file_name = fname
         self.conformed_period = conformed_period
-        self.submit_data = submit_date,
+        self.submit_date = submit_date
         self.data_frame = data_frame
 
 
@@ -91,7 +89,7 @@ def parse_form_13f(fname):
     conformed_period_of_report, filed_as_of_date, no_of_columns = \
             parse_form_13f_head(fname)
 
-    assert no_of_columns == len(COLUMN_NAMES), \
+    assert no_of_columns == len(Form13F.column_names), \
             'Not enough column_names/columns'
 
     # construct pandas.DataFrame from fixed with file, use the 0th column as
@@ -103,7 +101,7 @@ def parse_form_13f(fname):
                     (79, 92), (92, 112), (112, 123), (123, 132)],
         skiprows=[0,1,2,3,4],
         index_col=0,
-        names=COLUMN_NAMES,
+        names=Form13F.column_names,
     )
 
     # drop label if all values in row are Na
@@ -125,8 +123,7 @@ def sort_forms(data_set):
 
 
 def parse_all_files():
-    """returns data_set, [(fname, conformed_period_of_report, filed_as_of_date,
-    data_frame), ...]"""
+    """returns Form13F objects"""
     return sort_forms(
         map(parse_form_13f, get_files())
     )
