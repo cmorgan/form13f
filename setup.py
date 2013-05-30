@@ -14,10 +14,8 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            # gives analysis in machine-readable JSON structure
-            'solo-filing-analyse = solo.filing.analyse:analyse_all',
             # gives verbos answer to questions
-            'solo-filing-answer= solo.filing.analyse:analyse_all',
+            'solo-filing-answer= solo.filing.analyse:verbose_answer_all',
         ],
     },
 )

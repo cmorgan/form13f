@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Analyses datastructure ./data/solo-filing.pkl calculating metrics given in
 brief: "Data Exercise for IM Developer Role.docx"
@@ -23,11 +24,13 @@ from pprint import pprint
 
 from .import parse
 
+COM_REGEX='^COM\w*'
+
 
 def get_common_stocks(data_frame):
     title_of_class = parse.Form13F.column_names[1]
     # boolean array indicating match of COM followed by 0 or more whitespace
-    filter = data_frame[title_of_class].str.contains('^COM\w*')
+    filter = data_frame[title_of_class].str.contains(COM_REGEX)
     # apply pandas filter on columns
     return data_frame[filter]
 
@@ -64,8 +67,7 @@ def get_top_market_value(data_frame, n):
 
 
 def get_closest_form(forms, target_date):
-    """given set of data return that which has closest conformed period to
-    target date"""
+    """given forms return closest form to conformed period to target date"""
 
     date_diffs = []
     for i, form in enumerate(forms):
@@ -76,14 +78,13 @@ def get_closest_form(forms, target_date):
     # sort by date diff ascending
     sorted_diffs = sorted(date_diffs, key=lambda x: x[1])
 
-    return data_set[sorted_diffs[0][0]]
+    return forms[sorted_diffs[0][0]]
 
 
 def question_2_a(forms):
-    """a) What was the total value of all common stock positions in the fund
-    for each quarter? Did the fund grow or fall in value with respect to its
-    common stock positions over the 4 quarters?
-    """
+    """Question a) What was the total value of all common stock positions in
+    the fund for each quarter? Did the fund grow or fall in value with respect
+    to its common stock positions over the 4 quarters?  """
 
     total_values = []
     for form in forms:
@@ -98,8 +99,8 @@ def question_2_a(forms):
 
 
 def question_2_b(forms):
-    """b) What would have been the 5 largest holdings of common stock that were
-    publically available on 12 August 2012 for the fund manager?"""
+    """Question b) What would have been the 5 largest holdings of common stock
+    that were publically available on 12 August 2012 for the fund manager?"""
     target_date = datetime.datetime(2012, 8, 12)
 
     form = get_closest_form(forms, target_date)
@@ -109,8 +110,8 @@ def question_2_b(forms):
 
 
 def question_2_c(forms):
-    """c) As at 12/31/2012, what were the fund's 3 biggest new common stock
-    positions (stocks it had not held in the previous quarter)?"""
+    """Question c) As at 12/31/2012, what were the fund's 3 biggest new common
+    stock positions (stocks it had not held in the previous quarter)?"""
 
     target_conformed_period = datetime.datetime(2012, 12, 31)
 
@@ -129,28 +130,44 @@ def question_2_c(forms):
     return top_holdings
 
 
+def check_number_of_forms(forms):
+    assert len(forms) == 4, 'Wrong number of forms.'
+
+
 def verbose_answer_all():
     forms = parse.parse_all_files()
-    print question_2_a.__doc__
+
+    print '\n' + question_2_a.__doc__
     total_values, fund_growth = question_2_a(forms)
-    print ('Answer: The fund %s grow with respect to its COM.* positions '
-           'over the 4 quarters' % 'did' if fund_growth else 'did not')
+
+    value_string = 'The value of the fund in conformed period %s was £%sk'
+
+    all_value_string = '\n'.join(
+        [value_string % (form.conformed_period, fund_value) for form,
+         fund_value in total_values]
+    )
+
+    print ('Answer:\n%s.\nThe fund %s grow with respect to its %s positions '
+           'over the 4 quarters.\n' % (
+               all_value_string,
+               'did' if fund_growth else 'did not', COM_REGEX)
+           )
 
     print question_2_b.__doc__
     print ('Answer: 5 largest holdings of common stock that were vailble to '
-           'the public as of 12/08/12 were: %s' % question_2_b(forms))
+           'the public as of 12/08/12 were: %s\n' % ', '.join(
+               list(question_2_b(forms).index))
+           )
 
     print question_2_c.__doc__
-    print 'Answer: The 3 biggest mew COM.* positions as of 12/31/2012 are: %s'\
-            % ', '.join(list(question_2_c(forms).index))
+    print 'Answer: The 3 biggest mew %s positions as of 12/31/2012 are: %s\n'\
+            % (COM_REGEX, ', '.join(list(question_2_c(forms).index)))
 
 
 def analyse_all():
+    forms = parse.parse_all_files()
+    check_number_of_forms(forms)
 
-    quarters = parse.parse_all_files()
-    assert len(quarters) == 4, 'Wrong number of quarters'
-
-    print question_2_a(quarters)
-    print question_2_b(quarters)
-
-    print question_2_c(quarters)
+    print question_2_a(forms)
+    print question_2_b(forms)
+    print question_2_c(forms)
