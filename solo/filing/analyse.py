@@ -20,19 +20,32 @@ c) As at 12/31/2012, what were the fund's 3 biggest new common stock positions
 """
 
 import datetime
-from pprint import pprint
 
 from .import parse
 
-COM_REGEX='^COM\w*'
+# starts with COM followed by 0 or more whitespace and any char. except newline
+COM_REGEX='^COM\w*.*$'
+
+# 7th and 8th char must be alphanumeric
+# http://en.wikipedia.org/wiki/Cusip
+PUBLIC_CUSIP_REGEX=''
 
 
 def get_common_stocks(data_frame):
     title_of_class = parse.Form13F.column_names[1]
-    # boolean array indicating match of COM followed by 0 or more whitespace
+    # boolean array indicating match
     filter = data_frame[title_of_class].str.contains(COM_REGEX)
     # apply pandas filter on columns
     return data_frame[filter]
+
+
+def get_public_security(data_frame):
+    cusip = parse.Form13F.column_names[2]
+    # boolean array indicating match
+    filter = data_frame[title_of_class].str.contains(PUBLIC_CUSIP_REGEX)
+    # apply pandas filter on columns
+    return data_frame[filter]
+
 
 
 def total_market_value_of_COM(data_frame):
@@ -154,13 +167,13 @@ def verbose_answer_all():
            )
 
     print question_2_b.__doc__
-    print ('Answer: 5 largest holdings of common stock that were vailble to '
+    print ('Answer:\n5 largest holdings of common stock that were vailble to '
            'the public as of 12/08/12 were: %s\n' % ', '.join(
                list(question_2_b(forms).index))
            )
 
     print question_2_c.__doc__
-    print 'Answer: The 3 biggest mew %s positions as of 12/31/2012 are: %s\n'\
+    print 'Answer:\nThe 3 biggest mew %s positions as of 12/31/2012 are: %s\n'\
             % (COM_REGEX, ', '.join(list(question_2_c(forms).index)))
 
 
