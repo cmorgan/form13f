@@ -19,8 +19,8 @@ import pandas
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_DIR = os.path.join(THIS_DIR, 'data')
 
-f = '/home/chris/dev/other/solo/solo/filing/data/0000909012-12-000357.txt'
-f2 = '/home/chris/dev/other/solo/solo/filing/data/0000909012-12-000436.txt'
+f = '/home/chris/dev/3rdparty/form13f/filing/data/0000909012-12-000357.txt'
+#f2 = '/home/chris/dev/other/solo/solo/filing/data/0000909012-12-000436.txt'
 
 # TODO: this could be a nicer datastruct like collections.namedtuple so we
 # access it as an object by attribute
@@ -70,7 +70,7 @@ def parse_form_13f_head(fname):
                 no_of_columns = line.count('<C>') + 1
                 return conformed_period_of_report, filed_as_of_date, no_of_columns
 
-    return conformed_period_of_report, file_as_of_date, no_of_columns
+    return conformed_period_of_report, filed_as_of_date, no_of_columns
 
 
 def parse_form_13f(fname):
@@ -107,7 +107,14 @@ def parse_form_13f(fname):
     return fname, conformed_period_of_report, filed_as_of_date, data_frame
 
 
+def sort_data_set(data_set):
+    "sorts data_set by conformed date"
+    return sorted(data_set, key=lambda d: d[1])
+
+
 def parse_all_files():
     """returns data_set, [(fname, conformed_period_of_report, filed_as_of_date,
     data_frame), ...]"""
-    return map(parse_form_13f, get_files())
+    return sort_data_set(
+        map(parse_form_13f, get_files())
+    )

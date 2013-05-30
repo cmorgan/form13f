@@ -40,5 +40,33 @@ class TestParse(unittest.TestCase):
         )
 
 
+    def test_market_value_sums(self):
+        """use sum of market value as a checksum, see ./solo/filing/data/odf/.
+        for OpenDocument spreadsheets used to calc these values"""
+
+        # OpenOffice Calc values
+        # filename, sum of market value column                 
+        file_one = ['0000909012-12-000274.txt', 667757]
+
+        file_two = ['0000909012-12-000357.txt', 769056]
+
+        file_three = ['0000909012-12-000436.txt', 692743]
+
+        file_four = ['0000909012-13-000071.txt', 831365]
+
+        fixture_data_set = [file_one, file_two, file_three, file_four]
+
+        data_set = parse.parse_all_files()
+
+        for algo_data, fixture_data in zip(data_set, fixture_data_set):
+            fname, _, _, data_frame = algo_data
+
+            # assert filename the same (discard path for algo data)
+            self.assertEqual(os.path.basename(fname), fixture_data[0])
+
+            self.assertEqual(data_frame['MARKET VALUE'].sum(),
+                             fixture_data[1])
+
+
 if __name__ == '__main__':
     unittest.main()
