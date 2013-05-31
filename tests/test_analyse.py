@@ -25,23 +25,23 @@ class TestAnalyse(unittest.TestCase):
 
         # file_name, conformed_date, report_date, com_value
         file_one = ['0000909012-12-000274.txt',
-                    datetime.datetime(2012, 3, 31, 0, 0),
-                    datetime.datetime(2012, 5, 15, 0, 0),
+                    datetime.date(2012, 3, 31),
+                    datetime.date(2012, 5, 15),
                     583849.0]
 
         file_two = ['0000909012-12-000357.txt',
-                    datetime.datetime(2012, 6, 30, 0, 0),
-                    datetime.datetime(2012, 8, 14, 0, 0),
+                    datetime.date(2012, 6, 30),
+                    datetime.date(2012, 8, 14),
                     656620.0]
 
         file_three = ['0000909012-12-000436.txt',
-                     datetime.datetime(2012, 9, 30, 0, 0),
-                     datetime.datetime(2012, 11, 9, 0, 0),
+                     datetime.date(2012, 9, 30),
+                     datetime.date(2012, 11, 9),
                      602253.0]
 
         file_four = ['0000909012-13-000071.txt',
-                     datetime.datetime(2012, 12, 31, 0, 0),
-                     datetime.datetime(2013, 2, 13, 0, 0),
+                     datetime.date(2012, 12, 31),
+                     datetime.date(2013, 2, 13),
                      725498.0]
 
         fixtures = [file_one, file_two, file_three, file_four]
@@ -61,7 +61,7 @@ class TestAnalyse(unittest.TestCase):
                                        'GENERAL ELECTRIC CO',
                                        'FRANKLIN RES INC'])
 
-        self.assertEqual(sorted(list(answer.index)), fixture_answer_index)
+        self.assertEqual(sorted(list(answer)), fixture_answer_index)
 
 
 if __name__ == '__main__':

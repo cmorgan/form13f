@@ -26,27 +26,31 @@ from .import parse
 # starts with COM followed by 0 or more whitespace and any char. except newline
 COM_REGEX='^COM\w*.*$'
 
-# equites have CUSIP with 7th and 8th char alphanumeric
-# http://en.wikipedia.org/wiki/Cusip
-EQUITY_CUSIP_REGEX='^\w{6}[0-9]{2}.*'
-
 COLUMNS = parse.Form13F.column_names
+
+
+def is_nyse_open(dt):
+    nyse_holiday_list_2013 = [
+        datetime.date(2013, 1, 1),
+        datetime.date(2013, 1, 21),
+        datetime.date(2013, 2, 18),
+        datetime.date(2013, 3, 29),
+        datetime.date(2013, 5, 27),
+        datetime.date(2013, 7, 4),
+        datetime.date(2013, 9, 2),
+        datetime.date(2013, 11, 28),
+        datetime.date(2013, 12, 25)
+    ]
+    # monday = 0, sunday = 6
+    if dt.weekday() < 5 and dt not in nyse_holiday_list_2013:
+        return True
+    return False
 
 
 def get_common_stocks(data_frame):
     title_of_class = COLUMNS[1]
     # boolean array indicating match
     filter = data_frame[title_of_class].str.contains(COM_REGEX)
-    # apply pandas filter on columns
-    return data_frame[filter]
-
-
-def get_public_security(data_frame):
-    """equites are public securities. Use EQUITY_CUSIP_REGEX to find these
-    returs filtered data_frame"""
-    cusip = COLUMNS[2]
-    # boolean array indicating match
-    filter = data_frame[cusip].str.contains(EQUITY_CUSIP_REGEX)
     # apply pandas filter on columns
     return data_frame[filter]
 
@@ -116,21 +120,25 @@ def question_2_a(forms):
 def question_2_b(forms):
     """Question b) What would have been the 5 largest holdings of common stock
     that were publically available on 12 August 2012 for the fund manager?"""
-    target_date = datetime.datetime(2012, 8, 12)
+    target_date = datetime.date(2012, 8, 12)
+
+    # to be publically available, an exchange must be open
+    if not is_nyse_open(target_date):
+        return []
 
     form = get_closest_form(forms, target_date)
 
-    public_data_frame = get_public_security(form.data_frame)
+    common_stocks = get_common_stocks(form.data_frame)
 
     # assuming 'largest holdings' means by market value not no. of shares
-    return get_top_market_value(public_data_frame, 5)
+    return get_top_market_value(common_stocks, 5).index
 
 
 def question_2_c(forms):
     """Question c) As at 12/31/2012, what were the fund's 3 biggest new common
     stock positions (stocks it had not held in the previous quarter)?"""
 
-    target_conformed_period = datetime.datetime(2012, 12, 31)
+    target_conformed_period = datetime.date(2012, 12, 31)
 
     # check the last conformed data equals target
     assert forms[-1].conformed_period == target_conformed_period, \
@@ -144,7 +152,7 @@ def question_2_c(forms):
     # assuming 'biggest new common stock...' means by market value
     top_holdings = get_top_market_value(new_stocks, 3)
 
-    return top_holdings
+    return top_holdings.index
 
 
 def check_number_of_forms(forms):
@@ -173,12 +181,12 @@ def verbose_answer_all():
     print question_2_b.__doc__
     print ('Answer:\n5 largest holdings of common stock that were availble to '
            'the public as of 12/08/12 were: %s\n' % ', '.join(
-               list(question_2_b(forms).index))
+               list(question_2_b(forms)))
            )
 
     print question_2_c.__doc__
     print 'Answer:\nThe 3 biggest mew %s positions as of 12/31/2012 are: %s\n'\
-            % (COM_REGEX, ', '.join(list(question_2_c(forms).index)))
+            % (COM_REGEX, ', '.join(list(question_2_c(forms))))
 
 
 def analyse_all():

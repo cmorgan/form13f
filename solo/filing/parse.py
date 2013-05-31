@@ -18,9 +18,6 @@ import pandas
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_DIR = os.path.join(THIS_DIR, 'data')
 
-f = '/home/chris/dev/3rdparty/form13f/filing/data/0000909012-12-000357.txt'
-#f2 = '/home/chris/dev/other/solo/solo/filing/data/0000909012-12-000436.txt'
-
 
 class Form13F:
     column_names = ['NAME OF ISSUER', 'TITLE OF CLASS', 'CUSIP',
@@ -46,7 +43,7 @@ def parse_form_13f_date(date_string):
     # remove tabs, newlines and spaces
     date_string = date_string.strip()
     # No Exception handling here as the date is used as an index
-    return datetime.datetime.strptime(date_string, '%Y%m%d')
+    return datetime.datetime.strptime(date_string, '%Y%m%d').date()
 
 
 def parse_form_13f_head(fname):
