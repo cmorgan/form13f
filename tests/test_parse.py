@@ -22,8 +22,8 @@ class TestParse(unittest.TestCase):
         form = parse.parse_form_13f(test_file_one)
 
         self.assertEqual(
-            form.data_frame.ix['ITAU UNIBANCO HLDG SA']['MARKET VALUE'], 
-                         int(lines[580][60:63].strip())
+            form.data_frame.ix['ITAU UNIBANCO HLDG SA']['MARKET VALUE'],
+            int(lines[580][60:63].strip())
         )
 
     def test_parse_form_two(self):
@@ -36,17 +36,16 @@ class TestParse(unittest.TestCase):
         form = parse.parse_form_13f(test_file_two)
 
         self.assertEqual(
-            form.data_frame.ix['AKAMAI TECHNOLOGIES INC']['SHRS OR PRN AMT'], 
-                         int(lines[36][68:73].strip())
+            form.data_frame.ix['AKAMAI TECHNOLOGIES INC']['SHRS OR PRN AMT'],
+            int(lines[36][68:73].strip())
         )
-
 
     def test_market_value_sums(self):
         """use sum of market value as a checksum, see ./solo/filing/data/odf/.
         for OpenDocument spreadsheets used to calc these values"""
 
         # OpenOffice Calc values
-        # filename, sum of market value column                 
+        # filename, sum of market value column
         file_one = ['0000909012-12-000274.txt', 667757]
 
         file_two = ['0000909012-12-000357.txt', 769056]

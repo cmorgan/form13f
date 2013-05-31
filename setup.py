@@ -11,6 +11,7 @@ setup(
         'pandas',
         'numpy',
         'nose',  # only required for running tests
+        'flake8',
     ],
     entry_points={
         'console_scripts': [

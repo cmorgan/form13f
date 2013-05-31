@@ -13,7 +13,7 @@ quarter? Did the fund grow or fall in value with respect to its common stock
 positions over the 4 quarters?
 
 b) What would have been the 5 largest holdings of common stock that were
-publically available on 12 August 2012 for the fund manager? 
+publically available on 12 August 2012 for the fund manager?
 
 c) As at 12/31/2012, what were the fund's 3 biggest new common stock positions
 (stocks it had not held in the previous quarter)?
@@ -24,7 +24,7 @@ import datetime
 from .import parse
 
 # starts with COM followed by 0 or more whitespace and any char. except newline
-COM_REGEX='^COM\w*.*$'
+COM_REGEX = '^COM\w*.*$'
 
 COLUMNS = parse.Form13F.column_names
 
@@ -143,7 +143,7 @@ def question_2_c(forms):
 
     # check the last conformed data equals target
     assert forms[-1].conformed_period == target_conformed_period, \
-            'Got wrong date'
+        'Got wrong date'
 
     target_data_frame = forms[-1].data_frame
     previous_data_frame = forms[-2].data_frame
@@ -187,4 +187,4 @@ def verbose_answer_all():
 
     print question_2_c.__doc__
     print 'Answer:\nThe 3 biggest mew %s positions as of 12/31/2012 are: %s\n'\
-            % (COM_REGEX, ', '.join(question_2_c(forms)))
+        % (COM_REGEX, ', '.join(question_2_c(forms)))

@@ -5,7 +5,7 @@ From brief:
 
 1. Store the fields from the complete submission text files (including Name
 of Issuer, Title of Class, CUSIP, etc) in a data structure. Be sure to include
-the "period of report" and the "filed as of date" as fields. 
+the "period of report" and the "filed as of date" as fields.
 """
 
 import os
@@ -70,8 +70,7 @@ def parse_form_13f_head(fname):
                 # count the <S> column in the column count
                 no_of_columns = line.count('<C>') + 1
                 return conformed_period_of_report, filed_as_of_date, \
-                        no_of_columns
-
+                    no_of_columns
 
     return conformed_period_of_report, filed_as_of_date, no_of_columns
 
@@ -86,16 +85,16 @@ def parse_form_13f(fname):
             parse_form_13f_head(fname)
 
     assert no_of_columns == len(Form13F.column_names), \
-            'Not enough column_names/columns'
+        'Not enough column_names/columns'
 
     # construct pandas.DataFrame from fixed with file, use the 0th column as
     # the label for the row (security)
     data_frame = pandas.read_fwf(
         fname,
         # ranges of the fixed width columns
-        colspecs = [(0, 29), (29, 45), (45, 57), (57, 64), (64, 73), (73, 79),
-                    (79, 92), (92, 112), (112, 123), (123, 132)],
-        skiprows=[0,1,2,3,4],
+        colspecs=[(0, 29), (29, 45), (45, 57), (57, 64), (64, 73), (73, 79),
+                  (79, 92), (92, 112), (112, 123), (123, 132)],
+        skiprows=[0, 1, 2, 3, 4],
         index_col=0,
         names=Form13F.column_names,
     )
