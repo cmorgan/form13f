@@ -5,8 +5,6 @@ import datetime
 
 from solo.filing import analyse, parse
 
-from pprint import pprint 
-
 
 class TestAnalyse(unittest.TestCase):
     """Used for ensuring the we maintain the correct answer when refactoring

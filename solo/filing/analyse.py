@@ -42,7 +42,6 @@ def is_nyse_open(dt):
         datetime.date(2013, 12, 25)
     ]
     # monday = 0, sunday = 6
-    print dt.weekday()
     if dt.weekday() < 5 and dt not in nyse_holiday_list_2013:
         return True
     return False
@@ -189,12 +188,3 @@ def verbose_answer_all():
     print question_2_c.__doc__
     print 'Answer:\nThe 3 biggest mew %s positions as of 12/31/2012 are: %s\n'\
             % (COM_REGEX, ', '.join(question_2_c(forms)))
-
-
-def analyse_all():
-    forms = parse.parse_all_files()
-    check_number_of_forms(forms)
-
-    print question_2_a(forms)
-    print question_2_b(forms)
-    print question_2_c(forms)
