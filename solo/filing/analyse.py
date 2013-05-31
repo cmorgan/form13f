@@ -42,6 +42,7 @@ def is_nyse_open(dt):
         datetime.date(2013, 12, 25)
     ]
     # monday = 0, sunday = 6
+    print dt.weekday()
     if dt.weekday() < 5 and dt not in nyse_holiday_list_2013:
         return True
     return False
@@ -120,6 +121,7 @@ def question_2_a(forms):
 def question_2_b(forms):
     """Question b) What would have been the 5 largest holdings of common stock
     that were publically available on 12 August 2012 for the fund manager?"""
+
     target_date = datetime.date(2012, 8, 12)
 
     # to be publically available, an exchange must be open

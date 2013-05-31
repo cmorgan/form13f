@@ -11,7 +11,7 @@ from pprint import pprint
 class TestAnalyse(unittest.TestCase):
     """Used for ensuring the we maintain the correct answer when refactoring
     analyse.py. It is not intended to test the sum function of
-    panadas.DataFrame - that would be pointless."""
+    panadas.DataFrame"""
 
     @property
     def data(self):
@@ -53,6 +53,17 @@ class TestAnalyse(unittest.TestCase):
             self.assertEqual(form.submit_date, fixture[2])
             self.assertEqual(com_value, fixture[3])
 
+    def test_question_2_b_exchange_open(self):
+        # the market is closed, return no stocks
+        self.assertFalse(bool(analyse.question_2_b(self.data)))
+
+    def test_is_nyse_open(self):
+        open_monday = datetime.date(2013, 5, 20)
+        self.assertTrue(analyse.is_nyse_open(open_monday))
+
+    def test_is_nyse_closed(self):
+        independence_day = datetime.date(2013, 7, 4)
+        self.assertFalse(analyse.is_nyse_open(independence_day))
 
     def test_question_2_c(self):
         answer = analyse.question_2_c(self.data)
