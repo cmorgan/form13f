@@ -182,7 +182,7 @@ def verbose_answer_all():
     print question_2_b.__doc__
     print ('Answer:\n5 largest holdings of common stock that were availble to '
            'the public as of 12/08/12 were: %s\n' % ', '.join(
-               question_2_b(forms))
+               question_2_b(forms) or ['None (is exchange open?)'])
            )
 
     print question_2_c.__doc__
