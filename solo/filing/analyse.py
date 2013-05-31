@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Analyses datastructure ./data/solo-filing.pkl calculating metrics given in
-brief: "Data Exercise for IM Developer Role.docx"
+Analyses parse.Form13F calculating metrics given in brief: "Data Exercise for
+IM Developer Role.docx"
 
 From brief:
 
@@ -131,7 +131,7 @@ def question_2_b(forms):
     common_stocks = get_common_stocks(form.data_frame)
 
     # assuming 'largest holdings' means by market value not no. of shares
-    return get_top_market_value(common_stocks, 5).index
+    return list(get_top_market_value(common_stocks, 5).index)
 
 
 def question_2_c(forms):
@@ -152,7 +152,7 @@ def question_2_c(forms):
     # assuming 'biggest new common stock...' means by market value
     top_holdings = get_top_market_value(new_stocks, 3)
 
-    return top_holdings.index
+    return list(top_holdings.index)
 
 
 def check_number_of_forms(forms):
@@ -181,12 +181,12 @@ def verbose_answer_all():
     print question_2_b.__doc__
     print ('Answer:\n5 largest holdings of common stock that were availble to '
            'the public as of 12/08/12 were: %s\n' % ', '.join(
-               list(question_2_b(forms)))
+               question_2_b(forms))
            )
 
     print question_2_c.__doc__
     print 'Answer:\nThe 3 biggest mew %s positions as of 12/31/2012 are: %s\n'\
-            % (COM_REGEX, ', '.join(list(question_2_c(forms))))
+            % (COM_REGEX, ', '.join(question_2_c(forms)))
 
 
 def analyse_all():
