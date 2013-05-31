@@ -1,6 +1,5 @@
 """
-Parses ./data/*.txt Form 13 F files (http://www.sec.gov/answers/form13f.htm),
-creates queryable datastructure, saves as pickle solo-filing.pkl
+Parses ./data/*.txt, constrcuts Form13F objects
 
 From brief:
 

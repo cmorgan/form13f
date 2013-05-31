@@ -6,6 +6,7 @@ Ubuntu
 """"""
 
 pip  # (sudo easy_install pip)
+gcc  # (sudo apt-get install gcc)
 
 OSX 10.8.2
 """"""""""
