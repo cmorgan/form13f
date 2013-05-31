@@ -26,13 +26,15 @@ from .import parse
 # starts with COM followed by 0 or more whitespace and any char. except newline
 COM_REGEX='^COM\w*.*$'
 
-# 7th and 8th char must be alphanumeric
+# equites have CUSIP with 7th and 8th char alphanumeric
 # http://en.wikipedia.org/wiki/Cusip
-PUBLIC_CUSIP_REGEX=''
+EQUITY_CUSIP_REGEX='^\w{6}[0-9]{2}.*'
+
+COLUMNS = parse.Form13F.column_names
 
 
 def get_common_stocks(data_frame):
-    title_of_class = parse.Form13F.column_names[1]
+    title_of_class = COLUMNS[1]
     # boolean array indicating match
     filter = data_frame[title_of_class].str.contains(COM_REGEX)
     # apply pandas filter on columns
@@ -40,19 +42,20 @@ def get_common_stocks(data_frame):
 
 
 def get_public_security(data_frame):
-    cusip = parse.Form13F.column_names[2]
+    """equites are public securities. Use EQUITY_CUSIP_REGEX to find these
+    returs filtered data_frame"""
+    cusip = COLUMNS[2]
     # boolean array indicating match
-    filter = data_frame[title_of_class].str.contains(PUBLIC_CUSIP_REGEX)
+    filter = data_frame[cusip].str.contains(EQUITY_CUSIP_REGEX)
     # apply pandas filter on columns
     return data_frame[filter]
-
 
 
 def total_market_value_of_COM(data_frame):
 
     data_frame = get_common_stocks(data_frame)
     # string identifying market value
-    market_value = parse.Form13F.column_names[3]
+    market_value = COLUMNS[3]
 
     return data_frame[market_value].sum()
 
@@ -74,13 +77,12 @@ def get_top_market_value(data_frame, n):
     "return top n holdings from a data_frame"
 
     # sort by market value
-    df_by_market_value = data_frame.sort(parse.Form13F.column_names[3],
-                                         ascending=False)
+    df_by_market_value = data_frame.sort(COLUMNS[3], ascending=False)
     return df_by_market_value[0: n]
 
 
 def get_closest_form(forms, target_date):
-    """given forms return closest form to conformed period to target date"""
+    """given forms return form with conformed period closest to target date"""
 
     date_diffs = []
     for i, form in enumerate(forms):
@@ -118,8 +120,10 @@ def question_2_b(forms):
 
     form = get_closest_form(forms, target_date)
 
+    public_data_frame = get_public_security(form.data_frame)
+
     # assuming 'largest holdings' means by market value not no. of shares
-    return get_top_market_value(form.data_frame, 5)
+    return get_top_market_value(public_data_frame, 5)
 
 
 def question_2_c(forms):
@@ -167,7 +171,7 @@ def verbose_answer_all():
            )
 
     print question_2_b.__doc__
-    print ('Answer:\n5 largest holdings of common stock that were vailble to '
+    print ('Answer:\n5 largest holdings of common stock that were availble to '
            'the public as of 12/08/12 were: %s\n' % ', '.join(
                list(question_2_b(forms).index))
            )

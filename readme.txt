@@ -30,3 +30,10 @@ Execute
 Once installed::
 
     solo-filing-answer
+
+Tests
+-----
+
+from project root::
+
+    nosetests
