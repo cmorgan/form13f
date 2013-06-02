@@ -23,11 +23,6 @@ import datetime
 
 from .import parse
 
-# starts with COM followed by 0 or more whitespace and any char. except newline
-COM_REGEX = '^COM\w*.*$'
-
-COLUMNS = parse.Form13F.column_names
-
 
 def is_nyse_open(dt):
     nyse_holiday_list_2013 = [
@@ -47,41 +42,21 @@ def is_nyse_open(dt):
     return False
 
 
-def get_common_stocks(data_frame):
-    title_of_class = COLUMNS[1]
-    # boolean array indicating match
-    filter = data_frame[title_of_class].str.contains(COM_REGEX)
-    # apply pandas filter on columns
-    return data_frame[filter]
+def get_new_stocks(form1, form2):
+    """return data_frame containing COM stock positions that are in form1 but
+    not in form2"""
 
-
-def total_market_value_of_COM(data_frame):
-
-    data_frame = get_common_stocks(data_frame)
-    # string identifying market value
-    market_value = COLUMNS[3]
-
-    return data_frame[market_value].sum()
-
-
-def get_new_stocks(data_frame1, data_frame2):
-    """return data_frame containing COM stock positions that are in data_frame1
-    but not in data_frame2"""
-
-    data_frame1, data_frame2 = map(get_common_stocks,
-                                   [data_frame1, data_frame2])
-
-    new_stocks = data_frame1.index - data_frame2.index
+    new_stocks = form1.common_stocks.index - form2.common_stocks.index
 
     # apply a pandas filter on the index
-    return data_frame1.ix[new_stocks]
+    return form1.data_frame.ix[new_stocks]
 
 
-def get_top_market_value(data_frame, n):
+def get_top_by_column(data_frame, n, column):
     "return top n holdings from a data_frame"
 
     # sort by market value
-    df_by_market_value = data_frame.sort(COLUMNS[3], ascending=False)
+    df_by_market_value = data_frame.sort(column, ascending=False)
     return df_by_market_value[0: n]
 
 
@@ -107,9 +82,7 @@ def question_2_a(forms):
 
     total_values = []
     for form in forms:
-        total_values.append(
-            (form, total_market_value_of_COM(form.data_frame))
-        )
+        total_values.append((form, form.total_market_value_of_COM))
 
     first_quarter_total = total_values[0][1]
     last_quarter_total = total_values[-1][1]
@@ -129,29 +102,32 @@ def question_2_b(forms):
 
     form = get_closest_form(forms, target_date)
 
-    common_stocks = get_common_stocks(form.data_frame)
+    common_stocks = form.common_stocks
 
+    market_value = form.column_names[3]
     # assuming 'largest holdings' means by market value not no. of shares
-    return list(get_top_market_value(common_stocks, 5).index)
+    return list(get_top_by_column(common_stocks, 5, market_value).index)
 
 
 def question_2_c(forms):
     """Question c) As at 12/31/2012, what were the fund's 3 biggest new common
     stock positions (stocks it had not held in the previous quarter)?"""
 
+    forms = parse.sort_forms(forms)
     target_conformed_period = datetime.date(2012, 12, 31)
 
     # check the last conformed data equals target
     assert forms[-1].conformed_period == target_conformed_period, \
         'Got wrong date'
 
-    target_data_frame = forms[-1].data_frame
-    previous_data_frame = forms[-2].data_frame
+    target_form = forms[-1]
+    previous_form = forms[-2]
 
-    new_stocks = get_new_stocks(target_data_frame, previous_data_frame)
+    new_stocks = get_new_stocks(target_form, previous_form)
 
+    market_value = target_form.column_names[3]
     # assuming 'biggest new common stock...' means by market value
-    top_holdings = get_top_market_value(new_stocks, 3)
+    top_holdings = get_top_by_column(new_stocks, 3, market_value)
 
     return list(top_holdings.index)
 
@@ -176,7 +152,7 @@ def verbose_answer_all():
     print('Answer:\n%s.\nThe fund %s grow with respect to its %s positions '
           'over the 4 quarters.\n' % (
               all_value_string,
-              'did' if fund_growth else 'did not', COM_REGEX)
+              'did' if fund_growth else 'did not', parse.Form13F.com_regex)
           )
 
     print(question_2_b.__doc__)
@@ -187,4 +163,4 @@ def verbose_answer_all():
 
     print(question_2_c.__doc__)
     print('Answer:\nThe 3 biggest mew %s positions as of 12/31/2012 are: %s\n'
-        % (COM_REGEX, ', '.join(question_2_c(forms))))
+        % (parse.Form13F.com_regex, ', '.join(question_2_c(forms))))

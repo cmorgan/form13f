@@ -19,6 +19,9 @@ DATA_DIR = os.path.join(THIS_DIR, 'data')
 
 
 class Form13F:
+    # starts with COM followed by 0 or more whitespace and any char. except
+    # newline
+    com_regex = '^COM\w*.*$'
     column_names = ['NAME OF ISSUER', 'TITLE OF CLASS', 'CUSIP',
                     'MARKET VALUE', 'SHRS OR PRN AMT', 'SH/ PUT/ PRN CALL',
                     'INVESTMENT DESCRETION', 'VOTING AUTHORITY SOLE',
@@ -29,6 +32,26 @@ class Form13F:
         self.conformed_period = conformed_period
         self.submit_date = submit_date
         self.data_frame = data_frame
+
+    @property
+    def common_stocks(self):
+        title_of_class = self.column_names[1]
+        # boolean array indicating match
+        filter = self.data_frame[title_of_class].str.contains(self.com_regex)
+        # apply pandas filter on columns
+        return self.data_frame[filter]
+
+    @property
+    def total_market_value_of_COM(self):
+        # string identifying market value
+        market_value = self.column_names[3]
+        return self.common_stocks[market_value].sum()
+
+    def __repr__(self):
+        # don't display_date frame in str(obj)
+        args = ",".join("%s=%r" % i for i in sorted(self.__dict__.items()) if
+                        not i[0] == 'data_frame')
+        return "%s(%s)" % (self.__class__.__name__, args)
 
 
 def get_files():
@@ -54,8 +77,6 @@ def parse_form_13f_head(fname):
     no_of_columns = None
 
     with open(fname, 'r') as f:
-        # give readlines a small buffer as we expect the head data in the first
-        # few lines
         for line in f:
             if 'CONFORMED PERIOD OF REPORT' in line:
                 title, conformed_period_of_report = line.split(':')
