@@ -2,6 +2,9 @@
 Environment dependencies
 ------------------------
 
+pip  # (sudo easy_install pip)
+Python 2.7+  # tested up to Python 3.3.2
+
 Ubuntu
 """"""
 

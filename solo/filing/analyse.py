@@ -163,9 +163,9 @@ def check_number_of_forms(forms):
 def verbose_answer_all():
     forms = parse.parse_all_files()
 
-    print '\n' + question_2_a.__doc__
-    total_values, fund_growth = question_2_a(forms)
+    print('\n' + question_2_a.__doc__)
 
+    total_values, fund_growth = question_2_a(forms)
     value_string = 'The value of the fund in conformed period %s was £%sk'
 
     all_value_string = '\n'.join(
@@ -173,18 +173,18 @@ def verbose_answer_all():
          fund_value in total_values]
     )
 
-    print ('Answer:\n%s.\nThe fund %s grow with respect to its %s positions '
-           'over the 4 quarters.\n' % (
-               all_value_string,
-               'did' if fund_growth else 'did not', COM_REGEX)
-           )
+    print('Answer:\n%s.\nThe fund %s grow with respect to its %s positions '
+          'over the 4 quarters.\n' % (
+              all_value_string,
+              'did' if fund_growth else 'did not', COM_REGEX)
+          )
 
-    print question_2_b.__doc__
-    print ('Answer:\n5 largest holdings of common stock that were availble to '
-           'the public as of 12/08/12 were: %s\n' % ', '.join(
-               question_2_b(forms) or ['None (is exchange open?)'])
-           )
+    print(question_2_b.__doc__)
+    print('Answer:\n5 largest holdings of common stock that were availble to '
+          'the public as of 12/08/12 were: %s\n' % ', '.join(
+              question_2_b(forms) or ['None (is exchange open?)'])
+          )
 
-    print question_2_c.__doc__
-    print 'Answer:\nThe 3 biggest mew %s positions as of 12/31/2012 are: %s\n'\
-        % (COM_REGEX, ', '.join(question_2_c(forms)))
+    print(question_2_c.__doc__)
+    print('Answer:\nThe 3 biggest mew %s positions as of 12/31/2012 are: %s\n'
+        % (COM_REGEX, ', '.join(question_2_c(forms))))

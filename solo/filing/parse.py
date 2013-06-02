@@ -56,7 +56,7 @@ def parse_form_13f_head(fname):
     with open(fname, 'r') as f:
         # give readlines a small buffer as we expect the head data in the first
         # few lines
-        for line in f.readlines(20):
+        for line in f:
             if 'CONFORMED PERIOD OF REPORT' in line:
                 title, conformed_period_of_report = line.split(':')
                 conformed_period_of_report = parse_form_13f_date(
@@ -105,7 +105,7 @@ def parse_form_13f(fname):
     # for each column apply a function on each of the rows which strips strings
     # of tabs, newlines and spaces
     data_frame = data_frame.apply(lambda x: x.apply(
-        lambda x: x.strip() if isinstance(x, basestring) else x)
+        lambda x: x.strip() if isinstance(x, str) else x)
     )
 
     return Form13F(fname, conformed_period_of_report, filed_as_of_date,
